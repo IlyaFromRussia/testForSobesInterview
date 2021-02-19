@@ -7,38 +7,77 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.testforsobesinterview.MainActivity;
 import com.example.testforsobesinterview.R;
 import com.example.testforsobesinterview.Town;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
     public SearchFragment(){ }
 
     private View rootView;
-    private ListView list;
+    private RecyclerView list;
+    private List<Town> townList;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable  ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_search,container,false);
+        list = rootView.findViewById(R.id.list);
+        list.setLayoutManager(new LinearLayoutManager(getActivity()));
+        updateUI();
         return rootView;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        list = rootView.findViewById(R.id.list);
-        List<Town> towns = ((MainActivity) getActivity()).getTowns();
-        ArrayAdapter<Town> adapter = new ArrayAdapter<>(getActivity(),R.layout.list_item, towns);
-        list.setAdapter(adapter);
-
-        super.onViewCreated(view, savedInstanceState);
+    private void updateUI(){
+        townList = ((MainActivity) getActivity()).getTowns();
+        TownAdapter townAdapter = new TownAdapter(townList);
+        list.setAdapter(townAdapter);
     }
+
+    /*
+                        ADAPTER
+    */
+    private class TownAdapter extends RecyclerView.Adapter<TownHolder> {
+        private List<Town> townList;
+
+        public TownAdapter(List<Town> townList) {
+            this.townList = townList;
+        }
+
+        @NonNull
+        @Override
+        public TownHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            return new TownHolder(inflater, parent);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull TownHolder holder, int position) {
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return townList.size();
+        }
+    }
+
+    /*
+                        HOLDER
+    */
+    private class TownHolder extends RecyclerView.ViewHolder{
+        public TownHolder(LayoutInflater inflater, ViewGroup parent){
+            super(inflater.inflate(R.layout.list_item,parent,false));
+        }
+    }
+
+
+
 }
