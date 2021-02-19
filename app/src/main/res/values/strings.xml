@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">testForSobesInterview</string>
+    <string name="fragmentManager_is_null">FragmentManager is null</string>
+</resources>
