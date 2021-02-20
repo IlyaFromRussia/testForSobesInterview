@@ -7,17 +7,22 @@ import android.location.Location;
 
 public class Town {
     private String name;
-    private Location location;
+    private String latitude;
+    private String longitude;
 
     public Town(String name){
         this.name = name;
-        location = new Location("47.42509761005917, 40.110525369348494");
+        latitude = "47.42509761005917";
+        longitude = "40.110525369348494";
     }
 
-    public double getLongitude(){
-        return location.getLongitude();
+    public String getLongitude(){
+        return longitude;
     }
-    public double getLatitude(){
-        return location.getLatitude();
+    public String getLatitude(){
+        return latitude;
+    }
+    public String getName(){
+        return name;
     }
 }

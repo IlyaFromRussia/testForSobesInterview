@@ -4,12 +4,19 @@ package com.example.testforsobesinterview.fragments;
  */
 
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckedTextView;
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.testforsobesinterview.MainActivity;
@@ -60,7 +67,8 @@ public class SearchFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull TownHolder holder, int position) {
-
+            Town town = townList.get(position);
+            holder.bind(town);
         }
 
         @Override
@@ -72,9 +80,31 @@ public class SearchFragment extends Fragment {
     /*
                         HOLDER
     */
-    private class TownHolder extends RecyclerView.ViewHolder{
+    private class TownHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private CheckedTextView firstLine;
+        private TextView secondLine;
+        private Town town;
+
         public TownHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.list_item,parent,false));
+            itemView.setOnClickListener(this::onClick);
+
+            firstLine = itemView.findViewById(R.id.firstLine);
+            secondLine = itemView.findViewById(R.id.secondLine);
+        }
+
+        public void bind(Town town){
+            this.town = town;
+            firstLine.setText(town.getName());
+            secondLine.setText(town.getLatitude() + "  " + town.getLongitude());
+        }
+
+        @Override
+        public void onClick(View v) {
+            firstLine.setChecked(true);
+            // тут пихать в базу информацию о выбраном городе, чтобы на фрагменте ее спросить.
+            FragmentActivity activity = getActivity();
+            MainActivity.resolveFragment(activity.getSupportFragmentManager());
         }
     }
 
