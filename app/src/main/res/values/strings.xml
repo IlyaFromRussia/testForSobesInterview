@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">testForSobesInterview</string>
-    <string name="fragmentManager_is_null">FragmentManager is null</string>
+    <string name="hint">Введите название города</string>
 </resources>
