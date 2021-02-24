@@ -12,9 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckedTextView;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -24,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.testforsobesinterview.MainActivity;
 import com.example.testforsobesinterview.R;
 import com.example.testforsobesinterview.Town;
+import com.example.testforsobesinterview.database.TownBaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +35,14 @@ public class SearchFragment extends Fragment {
     private List<Town> townList;
     private EditText editText;
     private TownAdapter adapter;
+    private ImageButton newTown;
+    private TownBaseHelper townBaseHelper;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable  ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_search,container,false);
+
         editText = rootView.findViewById(R.id.enteredText);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -50,7 +52,6 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                Log.d("ILYA-TEG", "!!!!!!!!!!!!!!!!! " + s);
                 String currentName = editText.getText().toString();
                 List<Town> newList = new ArrayList<>();
                 for (Town town : townList){
@@ -66,14 +67,23 @@ public class SearchFragment extends Fragment {
 
             }
         });
+
         list = rootView.findViewById(R.id.list);
         list.setLayoutManager(new LinearLayoutManager(getActivity()));
-        updateUI(); // мб тут выставить галочку текущего города
+
+        newTown = rootView.findViewById(R.id.newTown);
+        newTown.setOnClickListener((v) ->{
+            // insert новый город
+            // (количество встроенных городов не ограничено)
+        });
+
+        updateUI();
         return rootView;
     }
 
     private void updateUI(){
-        townList = ((MainActivity) getActivity()).getTowns();
+        townBaseHelper = new TownBaseHelper(getContext());
+        townList = townBaseHelper.getAllTowns();
         adapter = new TownAdapter(townList);
         list.setAdapter(adapter);
     }
@@ -99,7 +109,6 @@ public class SearchFragment extends Fragment {
         public void onBindViewHolder(@NonNull TownHolder holder, int position) {
             Town town = townList.get(position);
             holder.bind(town);
-            // кажется тут выставлять галочку при создании списка.
         }
 
         @Override
@@ -127,6 +136,8 @@ public class SearchFragment extends Fragment {
             this.town = town;
             firstLine.setText(town.getName());
             secondLine.setText(town.getLatitude() + "  " + town.getLongitude());
+            if (town.isLast() == 1)
+                firstLine.setChecked(true);
         }
 
         @Override
@@ -134,9 +145,11 @@ public class SearchFragment extends Fragment {
             firstLine.setChecked(true);
             ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).
                     hideSoftInputFromWindow(editText.getWindowToken(),0);   // иначе баг с открытой клавиатурой при возврате в прошлый фрагмент
-            // тут пихать в базу информацию о выбраном городе, чтобы на фрагменте ее спросить.
+            town.setLast(1);
+            townBaseHelper.reloadMark(town);
+
             FragmentActivity activity = getActivity();
-            MainActivity.resolveFragment(activity.getSupportFragmentManager());
+            ((MainActivity) activity).resolveFragment(activity.getSupportFragmentManager());
         }
     }
 }

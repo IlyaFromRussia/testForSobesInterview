@@ -12,8 +12,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final List<Town> towns = Arrays.asList(new Town("Moscow"),new Town("Shanghai"),new Town("Mumbai")
-            ,new Town("Prague"),new Town("Amsterdam"));
+    private final List<Town> towns = Arrays.asList(new Town("Moscow", 0, 0),new Town("Shanghai", 0, 1),
+            new Town("Mumbai", 0, 2), new Town("Prague", 1, 3),
+            new Town("Amsterdam",0, 4));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void resolveFragment(FragmentManager supportFragmentManager){
+    public void resolveFragment(FragmentManager supportFragmentManager){
         Calendar c = Calendar.getInstance();
         int hours = c.get(Calendar.HOUR_OF_DAY);
 

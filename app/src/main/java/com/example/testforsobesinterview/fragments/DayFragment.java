@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +22,7 @@ public class DayFragment  extends Fragment {
 
     private ImageButton search;
     private ImageButton navigate;
+    private TextView currentTown;
     private View rootView;
 
     @Nullable
@@ -28,7 +30,6 @@ public class DayFragment  extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         rootView = inflater.inflate(R.layout.fragment_day, container, false);
-
         return rootView;
     }
 
@@ -44,6 +45,9 @@ public class DayFragment  extends Fragment {
         navigate.setOnClickListener((View v) ->{
             // select closer town
         });
+
+        currentTown = rootView.findViewById(R.id.currentTown);
+        currentTown.setOnClickListener(null);  // иначе при случайном нажатии выпадает клавиатура.
 
         super.onViewCreated(view, savedInstanceState);
     }
