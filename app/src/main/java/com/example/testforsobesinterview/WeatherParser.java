@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class WeatherParser {
     List<Weather> weatherList = new ArrayList<>();
@@ -52,7 +53,7 @@ public class WeatherParser {
                     JSONObject oo = (JSONObject) arr.get(i);
                     if (oo.getString("dt_txt").contains("12:00:00")){
                         String date = oo.getString("dt_txt").substring(0,10); // date with format --> 2021-02-25
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", new Locale("en"));
                         Date myDate = simpleDateFormat.parse(date);
                         simpleDateFormat.applyPattern("EEEE");
                         String myDayOfWeek = simpleDateFormat.format(myDate);

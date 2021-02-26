@@ -3,4 +3,5 @@
     <string name="hint">Введите название города</string>
     <string name="forToast">Ошибка соединения с сервером OpenWeather</string>
     <string name="degree">°</string>
+    <string name="town_changed">Ближайший город: </string>
 </resources>

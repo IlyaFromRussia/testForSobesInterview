@@ -3,7 +3,13 @@ package com.example.testforsobesinterview.fragments;
  * author Lobov-IR
  */
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,6 +60,22 @@ public class NightFragment  extends SuperFragment {
         navigate = rootView.findViewById(R.id.navigate);
         navigate.setOnClickListener((View v) ->{
             // select closer town
+            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            boolean enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (enabled){
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
+                }
+                else {
+                    requestPermissions( new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+                }
+
+            }
+            else {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
         });
 
         header = rootView.findViewById(R.id.headerTown);

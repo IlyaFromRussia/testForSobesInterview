@@ -27,10 +27,18 @@ public class Weather {
                 weatherCode = WeatherCode.CLOUDS;
                 break;
             }
+            case "Snow":{
+                weatherCode = WeatherCode.SNOW;
+                break;
+            }
+            default:
+                weatherCode = WeatherCode.ALLERT;
         }
     }
 
     public enum WeatherCode{
+        ALLERT,
+        SNOW,
         RAIN,
         CLEAR,
         CLOUDS;

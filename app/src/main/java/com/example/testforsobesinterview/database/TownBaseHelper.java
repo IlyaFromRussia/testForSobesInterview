@@ -98,8 +98,12 @@ public class TownBaseHelper  extends SQLiteOpenHelper {
         sqLiteDatabaseWrite.update(TownDBSchema.TownTable.NAME,values,"id="+idStr,null);
 
         // выставляю новую галочку.
-        values = TownDBSchema.getContentValues(newTown);
-        idStr = String.valueOf(newTown.getId());
+        setMark(newTown);
+    }
+
+    public void setMark(Town town){
+        ContentValues values = TownDBSchema.getContentValues(town);
+        String idStr = String.valueOf(town.getId());
         sqLiteDatabaseWrite.update(TownDBSchema.TownTable.NAME,values,"id="+idStr,null);
     }
 }
