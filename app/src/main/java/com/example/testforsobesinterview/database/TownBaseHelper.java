@@ -22,9 +22,12 @@ public class TownBaseHelper  extends SQLiteOpenHelper {
     private SQLiteDatabase sqLiteDatabaseWrite;
     private static final int VERSION = 1;
     private static final String DATABASE_NAME = "townBase.db";
-    private final List<Town> towns = Arrays.asList(new Town("Moscow", 0, 0),new Town("Shanghai", 0, 1),
-            new Town("Mumbai", 0, 2), new Town("Prague", 1, 3),
-            new Town("Amsterdam",0, 4));
+    private final List<Town> towns = Arrays.asList(new Town("Moscow", 0, 0,String.valueOf(55.75115080026314), String.valueOf(37.640865232607055)),
+            new Town("Shanghai", 0, 1, String.valueOf(31.24243582623752), String.valueOf(121.46291303492524)),
+            new Town("Mumbai", 0, 2,String.valueOf(19.150972503817602),String.valueOf(72.8819674319197)),
+            new Town("Prague", 1, 3, String.valueOf(50.10898436884388), String.valueOf(14.53838779778374)),
+            new Town("Amsterdam",0, 4, String.valueOf(52.37764296471469), String.valueOf(4.900520505707462)),
+            new Town("Rostov-on-Don",0,5,String.valueOf(47.254385830547506), String.valueOf(39.67278326208904)));
 
     public TownBaseHelper(Context context){
         super(context,DATABASE_NAME,null,VERSION);

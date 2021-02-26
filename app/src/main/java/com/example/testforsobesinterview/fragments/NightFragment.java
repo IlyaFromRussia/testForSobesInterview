@@ -8,35 +8,77 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.testforsobesinterview.R;
+import com.example.testforsobesinterview.Town;
+import com.example.testforsobesinterview.Weather;
+import com.example.testforsobesinterview.WeatherParser;
+import com.example.testforsobesinterview.database.TownBaseHelper;
 
-public class NightFragment  extends Fragment {
-    public NightFragment(){
-        super(R.layout.fragment_night);
-    }
+import java.util.List;
+
+
+public class NightFragment  extends SuperFragment {
+    public NightFragment(){ }
 
     private ImageButton search;
+    private View rootView;
+    private ImageButton navigate;
+    private TextView header;
+    private Town currentTown;
+    private RecyclerView weatherList;
+    private WeatherAdapter adapter;
+    private TextView textUnderImage;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.fragment_night, container, false);
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
+        weatherList = rootView.findViewById(R.id.weatherList);
+        weatherList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        search = getActivity().findViewById(R.id.search);
+        search = rootView.findViewById(R.id.search);
         search.setOnClickListener((View v) ->{
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.fragment_main_view, SearchFragment.class, null).commit();
+            fragmentManager.beginTransaction().replace(R.id.fragment_main_view, SearchFragment.class, null).commit();
         });
 
-        super.onViewCreated(view, savedInstanceState);
+        navigate = rootView.findViewById(R.id.navigate);
+        navigate.setOnClickListener((View v) ->{
+            // select closer town
+        });
+
+        header = rootView.findViewById(R.id.headerTown);
+        TownBaseHelper townBaseHelper = new TownBaseHelper(getContext());
+        for (Town t : townBaseHelper.getAllTowns()){
+            if (t.isLast() == 1)
+                currentTown = t;
+        }
+        header.setText(currentTown.getName());
+        header.setOnClickListener(null);  // иначе при случайном нажатии выпадает клавиатура.
+
+        textUnderImage = rootView.findViewById(R.id.textUnderImage);
+
+        weatherList = rootView.findViewById(R.id.weatherList);
+        weatherList.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        WeatherParser parser = new WeatherParser(currentTown, getActivity(), this);
+        return rootView;
+    }
+
+    public void updateUI(List<Weather> weather){
+        adapter = new WeatherAdapter(weather);
+        weatherList.setAdapter(adapter);
+        Weather wea =weather.get(0);
+        if (wea != null){
+            textUnderImage.setText(wea.getWeatherCode().toString() +" "+ wea.getTemperature() + " " + getString(R.string.degree)+"C");
+        }
     }
 }

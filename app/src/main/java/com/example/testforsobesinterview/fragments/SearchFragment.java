@@ -7,7 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,6 +42,7 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable  ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_search,container,false);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
         editText = rootView.findViewById(R.id.enteredText);
         editText.addTextChangedListener(new TextWatcher() {
@@ -75,6 +76,10 @@ public class SearchFragment extends Fragment {
         newTown.setOnClickListener((v) ->{
             // insert новый город
             // (количество встроенных городов не ограничено)
+
+            // для тестирования
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_main_view,NightFragment.class, null).commit();
         });
 
         updateUI();

@@ -6,15 +6,9 @@ import androidx.fragment.app.FragmentManager;
 import com.example.testforsobesinterview.fragments.DayFragment;
 import com.example.testforsobesinterview.fragments.NightFragment;
 
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private final List<Town> towns = Arrays.asList(new Town("Moscow", 0, 0),new Town("Shanghai", 0, 1),
-            new Town("Mumbai", 0, 2), new Town("Prague", 1, 3),
-            new Town("Amsterdam",0, 4));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +30,5 @@ public class MainActivity extends AppCompatActivity {
         else
             supportFragmentManager.beginTransaction().add(R.id.fragment_main_view, NightFragment.class,null)
                     .commit();
-    }
-
-    public List<Town> getTowns(){
-        return towns;
     }
 }
