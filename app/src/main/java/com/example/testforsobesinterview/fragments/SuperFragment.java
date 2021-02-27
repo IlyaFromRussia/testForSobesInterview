@@ -29,6 +29,9 @@ import java.util.List;
 public class SuperFragment extends Fragment implements LocationListener{
     public SuperFragment(){}
     protected LocationManager locationManager;
+    protected WeatherAdapter adapter;
+    protected RecyclerView weatherList;
+    protected TextView textUnderImage;
 
     @Override
     public void onStop() {
@@ -78,6 +81,15 @@ public class SuperFragment extends Fragment implements LocationListener{
         Toast.makeText(getContext(),getString(R.string.town_changed) +" "+ closerTown.getName(),Toast.LENGTH_SHORT).show();
         locationManager.removeUpdates(this);  // иначе цикл
         ((MainActivity) getActivity()).resolveFragment(getActivity().getSupportFragmentManager());
+    }
+
+    public void updateUI(List<Weather> weather){
+        adapter = new WeatherAdapter(weather);
+        weatherList.setAdapter(adapter);
+        if (weather.size() > 0) {
+            Weather wea = weather.get(0);
+            textUnderImage.setText(wea.getWeatherCode().toString() +" "+ wea.getTemperature() + " " + getString(R.string.degree)+"C");
+        }
     }
 
     /*
@@ -144,12 +156,15 @@ public class SuperFragment extends Fragment implements LocationListener{
                 }
                 case CLEAR:{
                     weatherImage.setImageResource(R.drawable.clear);
+                    break;
                 }
                 case ALLERT:{
                     weatherImage.setImageResource(R.drawable.complain);  // иначе приложение падает.
+                    break;
                 }
                 case SNOW:{
                     weatherImage.setImageResource(R.drawable.snowy);
+                    break;
                 }
             }
 

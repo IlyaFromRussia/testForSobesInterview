@@ -5,13 +5,9 @@ package com.example.testforsobesinterview;
 
 import android.app.Activity;
 import android.util.Log;
-import android.view.ViewGroup;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.testforsobesinterview.fragments.DayFragment;
-import com.example.testforsobesinterview.fragments.NightFragment;
+import com.example.testforsobesinterview.database.TownBaseHelper;
+import com.example.testforsobesinterview.database.WeatherForDB;
 import com.example.testforsobesinterview.fragments.SuperFragment;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,8 +27,11 @@ import java.util.Locale;
 
 public class WeatherParser {
     List<Weather> weatherList = new ArrayList<>();
+    List<WeatherForDB> weatherForDB = new ArrayList<>();
+
     public WeatherParser(Town currentTown, Activity activity, SuperFragment fragment){
         new Thread(() ->{
+            TownBaseHelper townBaseHelper = new TownBaseHelper(activity);
             try {
                 URLConnection connection = new URL("https://api.openweathermap.org/data/2.5/forecast?lat=" + currentTown.getLatitude() +
                         "&lon=" + currentTown.getLongitude() + "&appid=914107844933cb3d3e69034a0c64e036").openConnection();
@@ -48,44 +47,47 @@ public class WeatherParser {
 
                 JSONObject object = new JSONObject(sb.toString());
                 JSONArray arr = object.getJSONArray("list");
+                int counterId = townBaseHelper.getMaxWeatherId() + 1;
 
                 for (int i=0; i < arr.length(); i++){
                     JSONObject oo = (JSONObject) arr.get(i);
                     if (oo.getString("dt_txt").contains("12:00:00")){
                         String date = oo.getString("dt_txt").substring(0,10); // date with format --> 2021-02-25
+
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", new Locale("en"));
                         Date myDate = simpleDateFormat.parse(date);
                         simpleDateFormat.applyPattern("EEEE");
                         String myDayOfWeek = simpleDateFormat.format(myDate);
+
                         JSONObject obj = oo.getJSONObject("main");
                         double temp = obj.getDouble("temp") - 273.15;
                         temp = Double.valueOf(temp).intValue();
+
                         JSONArray arrWeather = oo.getJSONArray("weather");
                         String weather = ( (JSONObject) arrWeather.get(0) ).getString("main");
+
                         weatherList.add(new Weather(myDayOfWeek, date, temp, weather));
+
+                        weatherForDB.add(new WeatherForDB(counterId, currentTown.getName(), date, myDayOfWeek, temp, weather));
+                        counterId++;
                     }
                 }
 
                 reader.close();
 
                 activity.runOnUiThread(() ->{
-                    if (fragment instanceof NightFragment)
-                        ((NightFragment) fragment).updateUI(weatherList);
-                    else ((DayFragment) fragment).updateUI(weatherList);
+                     fragment.updateUI(weatherList);
                 });
+
+                townBaseHelper.setWeatherForTown(weatherForDB);
 
             } catch (IOException | JSONException | ParseException e) {
                 Log.d("ILYA-ERROR-TEG", e.getMessage());
                 activity.runOnUiThread(() ->{
                     Toast.makeText(activity, R.string.forToast, Toast.LENGTH_LONG).show();
+                    fragment.updateUI(townBaseHelper.getOldWeather(currentTown.getName()));
                 });
             }
-
-
         }).start();
-    }
-
-    public List<Weather> getWeather(){
-        return weatherList;
     }
 }

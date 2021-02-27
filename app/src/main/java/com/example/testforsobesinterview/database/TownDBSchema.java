@@ -28,4 +28,30 @@ public class TownDBSchema {
         contentValues.put(TownTable.Cols.lastTown,town.isLast());
         return contentValues;
     }
+
+    public static final class WeatherTable{
+        public static final String NAME = "weather";
+
+        public static final class Cols{
+            public static String townName = "townName";
+            public static String id = "id";
+            public static String day = "day";
+            public static String date = "date";
+            public static String type = "type";
+            public static String temperature = "temperature";
+        }
+
+        public static ContentValues getContentValues(WeatherForDB weather){
+            ContentValues contentValues = new ContentValues();
+
+            contentValues.put(WeatherTable.Cols.id, weather.getId());
+            contentValues.put(WeatherTable.Cols.townName,weather.getTown());
+            contentValues.put(Cols.date,weather.getDate());
+            contentValues.put(Cols.day, weather.getDay());
+            contentValues.put(Cols.temperature, weather.getTemp());
+            contentValues.put(Cols.type, weather.getType());
+
+            return contentValues;
+        }
+    }
 }

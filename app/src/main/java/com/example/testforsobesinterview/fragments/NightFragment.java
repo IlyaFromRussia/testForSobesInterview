@@ -39,9 +39,6 @@ public class NightFragment  extends SuperFragment {
     private ImageButton navigate;
     private TextView header;
     private Town currentTown;
-    private RecyclerView weatherList;
-    private WeatherAdapter adapter;
-    private TextView textUnderImage;
 
     @Nullable
     @Override
@@ -94,14 +91,5 @@ public class NightFragment  extends SuperFragment {
 
         WeatherParser parser = new WeatherParser(currentTown, getActivity(), this);
         return rootView;
-    }
-
-    public void updateUI(List<Weather> weather){
-        adapter = new WeatherAdapter(weather);
-        weatherList.setAdapter(adapter);
-        Weather wea =weather.get(0);
-        if (wea != null){
-            textUnderImage.setText(wea.getWeatherCode().toString() +" "+ wea.getTemperature() + " " + getString(R.string.degree)+"C");
-        }
     }
 }

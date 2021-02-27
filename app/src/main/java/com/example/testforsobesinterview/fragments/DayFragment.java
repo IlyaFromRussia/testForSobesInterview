@@ -40,9 +40,7 @@ public class DayFragment  extends SuperFragment {
     private TextView header;
     private View rootView;
     private Town currentTown;
-    private RecyclerView weatherList;
-    private WeatherAdapter adapter;
-    private TextView textUnderImage;
+
 
     @Nullable
     @Override
@@ -90,15 +88,15 @@ public class DayFragment  extends SuperFragment {
 
         weatherList = rootView.findViewById(R.id.weatherList);
         weatherList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        WeatherParser parser = new WeatherParser(currentTown, getActivity(), this);
+        new WeatherParser(currentTown, getActivity(), this);
         return rootView;
     }
 
     public void updateUI(List<Weather> weather){
         adapter = new WeatherAdapter(weather);
         weatherList.setAdapter(adapter);
-        Weather wea =weather.get(0);
-        if (wea != null){
+        if (weather.size() > 0) {
+            Weather wea = weather.get(0);
             textUnderImage.setText(wea.getWeatherCode().toString() +" "+ wea.getTemperature() + " " + getString(R.string.degree)+"C");
         }
     }

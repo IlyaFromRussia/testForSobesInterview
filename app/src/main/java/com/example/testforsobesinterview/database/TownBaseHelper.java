@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.example.testforsobesinterview.Town;
+import com.example.testforsobesinterview.Weather;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,10 +41,16 @@ public class TownBaseHelper  extends SQLiteOpenHelper {
                 + TownDBSchema.TownTable.Cols.lastTown + ", " + TownDBSchema.TownTable.Cols.latitude + ", " +
                         TownDBSchema.TownTable.Cols.longitude + " )"
                   );
-        // первый раз заполняю таблицу.
+
         for (Town town : towns){
             db.insert(TownDBSchema.TownTable.NAME,null,TownDBSchema.getContentValues(town));
         }
+
+        // для хранения ранее полученных прогнозов.
+        db.execSQL("create table " + TownDBSchema.WeatherTable.NAME + "( id integer primary key autoincrement, "
+        + TownDBSchema.WeatherTable.Cols.townName + ", " + TownDBSchema.WeatherTable.Cols.date + ", " +
+                TownDBSchema.WeatherTable.Cols.day + ", " + TownDBSchema.WeatherTable.Cols.temperature
+                + ", " + TownDBSchema.WeatherTable.Cols.type + " )");
     }
 
     @Override
@@ -105,5 +112,62 @@ public class TownBaseHelper  extends SQLiteOpenHelper {
         ContentValues values = TownDBSchema.getContentValues(town);
         String idStr = String.valueOf(town.getId());
         sqLiteDatabaseWrite.update(TownDBSchema.TownTable.NAME,values,"id="+idStr,null);
+    }
+
+    public void setWeatherForTown(List<WeatherForDB> weatherList){
+        // Если есть записи, то update, иначе insert
+        if (weatherList.get(0) != null){
+            String name = weatherList.get(0).getTown();
+            if (sqLiteDatabaseRead == null)
+                sqLiteDatabaseRead = getReadableDatabase();
+
+            Cursor cursor = sqLiteDatabaseRead.rawQuery("SELECT COUNT(*) FROM WEATHER WHERE townName=?",new String[]{name});
+            cursor.moveToFirst();
+            int i = cursor.getInt(0);
+            if (i == 0){ // не вернулись записи. значит для этого города нет записей. делаем insert
+                SQLiteDatabase database = getWritableDatabase();
+                for (WeatherForDB w : weatherList){
+                    database.insert(TownDBSchema.WeatherTable.NAME,null, TownDBSchema.WeatherTable.getContentValues(w));
+                }
+            }
+            else { // записи уже есть. просто обновляем их
+                SQLiteDatabase database = getWritableDatabase();
+                for (WeatherForDB w : weatherList){
+                     database.update(TownDBSchema.WeatherTable.NAME, TownDBSchema.WeatherTable.getContentValues(w),
+                             TownDBSchema.WeatherTable.Cols.id + "=?", new String[]{w.getId().toString()});
+                }
+            }
+            cursor.close();
+        }
+    }
+
+    public int getMaxWeatherId(){
+        if (sqLiteDatabaseRead == null)
+            sqLiteDatabaseRead = getReadableDatabase();
+        Cursor cursor = sqLiteDatabaseRead.rawQuery("select max(id) from " + TownDBSchema.WeatherTable.NAME, null);
+        cursor.moveToFirst();
+        int i = cursor.getInt(0);
+        cursor.close();
+        return i;
+    }
+
+    public List<Weather> getOldWeather(String name){
+        ArrayList<Weather> weathers = new ArrayList<>();
+        if (sqLiteDatabaseRead == null)
+            sqLiteDatabaseRead = getReadableDatabase();
+        Cursor cursor = sqLiteDatabaseRead.query(TownDBSchema.WeatherTable.NAME, null, "townName=?", new String[]{name},
+                null, null, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            weathers.add(new Weather(cursor.getString(cursor.getColumnIndex(TownDBSchema.WeatherTable.Cols.day)),
+                    cursor.getString(cursor.getColumnIndex(TownDBSchema.WeatherTable.Cols.date)),
+                    cursor.getDouble(cursor.getColumnIndex(TownDBSchema.WeatherTable.Cols.temperature)),
+                    cursor.getString(cursor.getColumnIndex(TownDBSchema.WeatherTable.Cols.type))
+            ));
+            cursor.moveToNext();
+        }
+
+    cursor.close();
+        return weathers;
     }
 }
