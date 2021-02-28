@@ -54,4 +54,13 @@ public class TownDBSchema {
             return contentValues;
         }
     }
+
+    public static final class ServiceResult{
+        public static final String NAME = "serviceResult";
+
+        public static final class Cols{
+            public static String id = "id";
+            public static String flag = "flag";
+        }
+    }
 }

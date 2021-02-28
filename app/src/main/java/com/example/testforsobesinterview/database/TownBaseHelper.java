@@ -95,7 +95,6 @@ public class TownBaseHelper  extends SQLiteOpenHelper {
             wrapper.moveToNext();
         }
         // найден id записи, где нужно снять "галочку"
-//        Log.d("###@#@#@#@#@#",String.valueOf(id));
 
         town.setLastTown(0);
         String idStr = String.valueOf(town.getId());
@@ -169,5 +168,20 @@ public class TownBaseHelper  extends SQLiteOpenHelper {
 
     cursor.close();
         return weathers;
+    }
+
+    public Town getCurrentTown(){
+        Town town = null;
+        if(sqLiteDatabaseRead == null)
+            sqLiteDatabaseRead = getReadableDatabase();
+        Cursor cursor = sqLiteDatabaseRead.query(TownDBSchema.TownTable.NAME, null, "lastTown=1",
+                null,null,null,null);
+        TownCursorWrapper wrapper = new TownCursorWrapper(cursor);
+        wrapper.moveToFirst();
+        while (!wrapper.isAfterLast()) {
+            town = wrapper.getTown();
+            wrapper.moveToNext();
+        }
+        return town;
     }
 }

@@ -84,6 +84,7 @@ public class SuperFragment extends Fragment implements LocationListener{
     }
 
     public void updateUI(List<Weather> weather){
+        Log.d("updateUI-TG ", "updateUI() worked!");
         adapter = new WeatherAdapter(weather);
         weatherList.setAdapter(adapter);
         if (weather.size() > 0) {
